@@ -77,9 +77,9 @@ class UpdateCustomer extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        message: state.message,
-        customer: state.customer,
-        customers: state.customers
+        message: state.customersData.message,
+        customer: state.customersData.customer,
+        customers: state.customersData.customers
     }
 }
 

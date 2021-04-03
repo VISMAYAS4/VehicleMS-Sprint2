@@ -3,11 +3,12 @@ import * as actions from '../../actions/customerAction'
 import { Button, ButtonGroup, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import React, { Component } from 'react'
 
-import Alert from '@material-ui/lab/Alert';
+import AlertMessage from '../AlertMessage';
 import { CustomerNavBar } from "./CustomerNavBar"
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { Link } from "react-router-dom";
+import { Redirect } from 'react-router-dom';
 import  VisibilityIcon from '@material-ui/icons/Visibility';
 import { connect } from 'react-redux';
 
@@ -15,16 +16,16 @@ class ViewCustomers extends Component {
 
     constructor() {
         super();
-        this.state = { customers: [], message: '', displayAlert: false }
+        this.state = { customers:[], message: '', displayAlert: false }
     }
 
     componentDidMount() {
-        this.props.onFetchCustomers();
-
-    }
-
-    deleteCustomer(id) {
-        this.props.onDeleteCustomer(id);
+        const user = this.props.user;
+        if (this.props.isLoggedIn) {
+            if (user.roles.includes("ROLE_ADMIN")) { this.props.onFetchCustomers() }
+        else { this.props.onFetchCustomerEmail(user.email) }
+        }
+        
     }
 
     componentDidUpdate(prevProps) {
@@ -33,13 +34,24 @@ class ViewCustomers extends Component {
         }
     }
 
+
+
+    deleteCustomer(id) {
+        this.props.onDeleteCustomer(id);
+    }
+
+
     render() {
+        const { isLoggedIn } = this.props;
+        if (!isLoggedIn) {
+            return <Redirect to="/login" />;
+        }
+
         return (
+
             <div>
-                <CustomerNavBar />
-                {this.state.displayAlert && <Alert variant="filled" severity={this.props.message.includes("Successfully") ? "success" : "error"} style={{ justifyContent: "center" }}>
-                    {this.props.message}
-                </Alert>}
+                <CustomerNavBar isAdmin={this.props.user.roles.includes("ROLE_ADMIN")}/>
+                {this.state.displayAlert && <AlertMessage message={this.props.message}/>}
                 <br></br><br></br>
                 <TableContainer component={Paper}>
                     <Table aria-label="customized table">
@@ -49,7 +61,7 @@ class ViewCustomers extends Component {
                                 <TableCell align="center" style={{color:"#3f51b5",  fontSize: 'medium'}}>Customer Name</TableCell>
                                 <TableCell align="center" style={{color:"#3f51b5",  fontSize: 'medium'}}>Email Id</TableCell>
                                 <TableCell align="center" style={{color:"#3f51b5",  fontSize: 'medium'}}>Mobile Number</TableCell>
-                                <TableCell align="center" style={{color:"#3f51b5",  fontSize: 'medium'}}>Vehicle Location</TableCell>
+                                <TableCell align="center" style={{color:"#3f51b5",  fontSize: 'medium'}}>Address</TableCell>
                                 <TableCell align="center" style={{color:"#3f51b5",  fontSize: 'medium'}}>Actions</TableCell>
                             </TableRow>
                         </TableHead>
@@ -84,8 +96,10 @@ class ViewCustomers extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        message: state.message,
-        customers: state.customers
+        message: state.customersData.message,
+        customers: state.customersData.customers,
+        isLoggedIn: state.auth.isLoggedIn,
+        user: state.auth.user
     }
 }
 
@@ -94,7 +108,9 @@ const mapDispatchToState = (dispatch) => {
     return {
         onFetchCustomers: () => dispatch(actions.fetchCustomers()),
         onDeleteCustomer: (id) => dispatch(actions.deleteCustomer(id)),
-        onUpdateAlertMessage: (msg) => dispatch(actions.removeCustomer(msg))
+        onUpdateAlertMessage: (msg) => dispatch(actions.removeCustomer(msg)),
+        onFetchCustomerEmail: (email) => dispatch(actions.fetchByCustomerEmail(email))
+        
     }
 }
 

@@ -1,3 +1,5 @@
+import authHeader from "../services/auth-header";
+
 export const addcustomer = (msg) => {
     return { type: "ADD_CUSTOMER", payload: { message: msg } }
 }
@@ -5,7 +7,7 @@ export const addcustomer = (msg) => {
 export const addCustomer = (payload) => {
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeader(),
         body: JSON.stringify(payload)
     };
     return dispatch => {
@@ -30,16 +32,14 @@ export const fetchcustomers = (payload) => {
 export const fetchCustomers = () => {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        headers: authHeader()
     };
     return dispatch => {
         fetch('http://localhost:8081/api/v1/customers', requestOptions)
             .then(res => {
-                console.log(res);
                 return res.json();
             })
             .then(data => {
-                console.log(data);
                 dispatch(fetchcustomers(data));
             })
     }
@@ -53,7 +53,7 @@ export const removeCustomer = (msg) => {
 export const deleteCustomer = (customerId) => {
     const requestOptions = {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
+        headers: authHeader()
     };
     return dispatch => {
         fetch("http://localhost:8081/api/v1/customers/" + customerId, requestOptions)
@@ -80,7 +80,7 @@ export const editCustomer = (msg) => {
 export const updateCustomer = (payload) => {
     const requestOptions = {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeader(),
         body: JSON.stringify(payload)
     };
     return dispatch => {
@@ -108,7 +108,7 @@ export const fetchCustomerBy_ID = (payload) => {
 export const fetchCustomerByID = (payload) => {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        headers: authHeader()
     };
     return dispatch => {
         fetch('http://localhost:8081/api/v1/customers/' + payload,requestOptions )
@@ -130,8 +130,12 @@ export const fetchCustomerBy_Vtype = (payload) => {
 }
 
 export const fetchCustomerByVtype = (payload) => {
+    const requestOptions = {
+        method: 'GET',
+        headers: authHeader()
+    };
     return dispatch => {
-        fetch('http://localhost:8081/api/v1/customerByVehicleType/'+payload)
+        fetch('http://localhost:8081/api/v1/customerByVehicleType/'+payload, requestOptions)
         .then(res => {
             if (res.status === 200) {
                 return res.json();
@@ -152,8 +156,12 @@ export const fetchCustomerBy_VehicleLocation = (payload) => {
 }
 
 export const fetchCustomerByVehicleLocation = (payload) => {
+    const requestOptions = {
+        method: 'GET',
+        headers: authHeader()
+    };
     return dispatch => {
-        fetch('http://localhost:8081/api/v1/customerByVehicleLocation/'+payload)
+        fetch('http://localhost:8081/api/v1/customerByVehicleLocation/'+payload, requestOptions)
         .then(res => {
             if (res.status === 200) {
                 return res.json();
@@ -169,3 +177,28 @@ export const fetchCustomerByVehicleLocation = (payload) => {
     }
 }
 
+
+export const fetchByCustomer_Email = (payload) => {
+    return { type: "VIEW_CUSTOMER_EMAIL", payload: payload }
+}
+export const fetchByCustomerEmail = (payload) => {
+    const requestOptions = {
+        method: 'GET',
+        headers: authHeader()
+    };
+    return dispatch => {
+        fetch('http://localhost:8081/api/v1/customerByCustomerEmail/'+payload, requestOptions)
+        .then(res => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                console.log("Error");
+            }        
+        })
+        .then(data => {
+            dispatch(fetchByCustomer_Email(data));
+        }).catch(err=>{
+            console.warn(err)
+        })
+    }
+}

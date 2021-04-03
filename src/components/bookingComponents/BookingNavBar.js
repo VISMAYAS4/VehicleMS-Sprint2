@@ -1,5 +1,5 @@
 import { fade, makeStyles } from '@material-ui/core/styles';
-import { fetchCustomerByVehicleLocation, fetchCustomerByVtype, fetchCustomers } from "../../actions/customerAction"
+import { fetchBookingByCustomer, fetchBookingByDate, fetchBookingByVehicle, fetchBookings } from "../../actions/bookingAction"
 
 import AppBar from '@material-ui/core/AppBar';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -72,9 +72,9 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const options = ['Search', 'Vehicle Type', 'Vehicle Location'];
+const options = ['Search', 'Customer name', 'Vehicle number', 'Booking date'];
 
-export const CustomerNavBar = ({isAdmin}) => {
+export const BookingNavBar = ({isAdmin}) => {
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
@@ -87,21 +87,27 @@ export const CustomerNavBar = ({isAdmin}) => {
         switch (options[selectedIndex]) {
             case "Search":
                 {
-                    dispatch(fetchCustomers());
+                    dispatch(fetchBookings());
                     break;
                 }
-        
-            case "Vehicle Type":
+            case "Customer name":
                 {
                     console.info(`You clicked ${options[selectedIndex]}`);
-                    searchText && dispatch(fetchCustomerByVtype(searchText));
+                    searchText && dispatch(fetchBookingByCustomer(searchText));
                     setSearchText("")
                     break;
                 }
-            case "Vehicle Location":
+            case "Vehicle number":
                 {
                     console.info(`You clicked ${options[selectedIndex]}`);
-                    searchText && dispatch(fetchCustomerByVehicleLocation(searchText));
+                    searchText && dispatch(fetchBookingByVehicle(searchText));
+                    setSearchText("")
+                    break;
+                }
+            case "Booking date":
+                {
+                    console.info(`You clicked ${options[selectedIndex]}`);
+                    searchText && dispatch(fetchBookingByDate(searchText));
                     setSearchText("")
                     break;
                 }
@@ -133,9 +139,9 @@ export const CustomerNavBar = ({isAdmin}) => {
         <div className={classes.root}>
             <AppBar position="static" style={{ backgroundColor: 'ghostwhite ', color: 'black' }}>
                 <Toolbar>
-                    <Typography style={{ margin: "10px" }}><Link to="/viewCustomers" style={{ color: 'black' }}>Manage Customers</Link></Typography>
-                    <Typography style={{ margin: "10px" }}><Link to="/viewCustomers" style={{ textDecoration: 'none', color: 'black' }}>View Customer</Link></Typography>
-                    <Typography style={{ margin: "10px" }}><Link to="/addCustomer" style={{ textDecoration: 'none', color: 'black' }}>Add Customer</Link></Typography>
+                    <Typography style={{ margin: "10px" }}><Link to="/viewBooking" style={{ color: 'black' }}>Manage Bookings</Link></Typography>
+                    <Typography style={{ margin: "10px" }}><Link to="/viewBooking" style={{ textDecoration: 'none', color: 'black' }}>View Bookings</Link></Typography>
+                    <Typography style={{ margin: "10px" }}><Link to="/addBooking" style={{ textDecoration: 'none', color: 'black' }}>Add Booking</Link></Typography>
 
                     {isAdmin ? <>
                         <div className={classes.search} style={{ marginLeft: 'auto' }}>

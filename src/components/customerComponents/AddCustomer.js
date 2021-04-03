@@ -3,7 +3,7 @@ import * as actions from '../../actions/customerAction'
 import { Button, Container, Paper, Typography } from '@material-ui/core';
 import React, { Component } from 'react'
 
-import Alert from '@material-ui/lab/Alert';
+import AlertMessage from '../AlertMessage';
 import { CustomerNavBar } from "./CustomerNavBar"
 import { connect } from 'react-redux';
 
@@ -42,9 +42,8 @@ class AddCustomer extends Component {
         return (
             <div>
                  <CustomerNavBar/>
-                {this.state.displayAlert &&  <Alert variant="filled" severity="success" style={{justifyContent:"center"}}>
-                    {this.props.message}
-                </Alert>}
+                 {this.state.displayAlert && <AlertMessage message={this.props.message}/>}
+
                 <Container maxWidth="sm" style={{ marginTop: 15 }}>
                     <Paper elevation={5} style={{ padding: 8, justifyContent: "center", display: "flex" }} >
                         <form>
@@ -71,7 +70,7 @@ class AddCustomer extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        message: state.message
+        message: state.customersData.message
     }
 }
 
